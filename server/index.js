@@ -22,7 +22,7 @@ const createEvent = (id, time) => ({
   app_id: 789,
   time,
   data: {
-    ip_address: '206.161.212.7',
+    ip_address: '192.168.1.1',
     path: 'https://example.com',
     type: 'click',
   },
@@ -34,13 +34,16 @@ const shipEventBatch = (socket, batchSize) => {
   for (let i = 1; i <= batchSize; i += 1) {
     event.event_id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     event.time = +Date.now();
+    event.data.path = `https://example.com/${Math.floor(
+      Math.random() * Number.MAX_SAFE_INTEGER,
+    )}`;
     socket.send(JSON.stringify(event) + (i !== batchSize ? ',' : ']'), {
       fin: i === batchSize,
     });
   }
 };
 
-const maxEventsPerSecondDefault = 50000;
+const maxEventsPerSecondDefault = 5000;
 const batchSizeDefault = 1000;
 
 const wss = new WebSocket.Server({ noServer: true });

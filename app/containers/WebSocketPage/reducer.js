@@ -15,8 +15,12 @@ export const initialState = {
   maxSize: 100,
   itemsReceived: 0,
   itemsWritten: 0,
-  rateLimitItemsPerSecond: 25,
+  rateLimitItemsPerSecond: 5,
   startTime: +Date.now(),
+  server: {
+    maxEventsPerSecond: 10000,
+    batchSize: 1000,
+  },
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -49,6 +53,7 @@ const webSocketPageReducer = (state = initialState, action) =>
       case UPDATE_RATE_LIMIT_ACTION:
         draft.rateLimitItemsPerSecond = action.rateLimitItemsPerSecond;
         draft.maxSize = action.maxSize;
+        draft.server = action.server;
     }
   });
 

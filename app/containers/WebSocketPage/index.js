@@ -54,10 +54,10 @@ export function WebSocketPage(props) {
   useInjectReducer({ key: 'webSocketPage', reducer });
   useInjectSaga({ key: 'webSocketPage', saga });
   const [wsClient, setWsClient] = useState();
-  const [serverInputs, setServerInputs] = useState({
-    maxEventsPerSecond: 10000,
-    batchSize: 1000,
-  });
+  // const [serverInputs, setServerInputs] = useState({
+  //   maxEventsPerSecond: 10000,
+  //   batchSize: 1000,
+  // });
 
   const openWsConnection = () => {
     props.dispatch(restartAction());
@@ -70,7 +70,7 @@ export function WebSocketPage(props) {
     });
     c.addEventListener('open', () => {
       // console.log('use effect.send');
-      c.send(JSON.stringify({ ...serverInputs, type: 'hello' }));
+      c.send(JSON.stringify({ ...props.webSocketPage.server, type: 'hello' }));
     });
     c.addEventListener('close', () => {
       console.log('closed websocket connection');
@@ -85,17 +85,6 @@ export function WebSocketPage(props) {
     // eslint-disable-next-line new-cap
   }, []);
 
-  const handleServerInputChange = defaultValue => e => {
-    let newValue = defaultValue;
-    try {
-      newValue = parseInt(e.target.value, 10);
-      // eslint-disable-next-line no-empty
-    } catch (err) {}
-    setServerInputs({
-      ...serverInputs,
-      [e.target.name]: newValue,
-    });
-  };
   return (
     <div>
       <StyledButton
@@ -116,16 +105,48 @@ export function WebSocketPage(props) {
           <div>
             <Input
               name="maxEventsPerSecond"
-              value={serverInputs.maxEventsPerSecond.toString()}
-              onChange={handleServerInputChange}
+              value={props.webSocketPage.server.maxEventsPerSecond.toString()}
+              onChange={e => {
+                let rateLimit = 5000;
+                try {
+                  rateLimit = parseInt(e.target.value, 10);
+                  // eslint-disable-next-line no-empty
+                } catch (err) {}
+                props.dispatch(
+                  updateRateLimitAction({
+                    ...props.webSocketPage,
+                    server: {
+                      ...props.webSocketPage.server,
+                      maxEventsPerSecond: rateLimit,
+                    },
+                  }),
+                );
+              }}
             />{' '}
             - maxEventsPerSecond
           </div>
           <div>
             <Input
               name="batchSize"
-              value={serverInputs.batchSize.toString()}
-              onChange={handleServerInputChange}
+              value={props.webSocketPage.server.batchSize.toString()}
+              onChange={e => {
+                let newValue = 1000;
+                try {
+                  newValue = parseInt(e.target.value, 10);
+                  // eslint-disable-next-line no-empty
+                } catch (err) {
+                  console.error(err);
+                }
+                props.dispatch(
+                  updateRateLimitAction({
+                    ...props.webSocketPage,
+                    server: {
+                      ...props.webSocketPage.server,
+                      batchSize: newValue,
+                    },
+                  }),
+                );
+              }}
             />{' '}
             - batchSize
           </div>
