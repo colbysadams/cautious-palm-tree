@@ -30,7 +30,9 @@ const createEvent = (id, time) => ({
 
 const shipEventBatch = (socket, batchSize) => {
   const event = createEvent(0, 0);
-  socket.send('[', { fin: false });
+  if (batchSize >= 1) {
+    socket.send('[', { fin: false });
+  }
   for (let i = 1; i <= batchSize; i += 1) {
     event.event_id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     event.time = +Date.now();
@@ -46,6 +48,14 @@ const shipEventBatch = (socket, batchSize) => {
 const maxEventsPerSecondDefault = 5000;
 const batchSizeDefault = 1000;
 
+const getReasonableInput = (userInput, defaultValue) => {
+  const input = userInput || defaultValue;
+  if (input > defaultValue * 20 || input <= 0) {
+    return defaultValue;
+  }
+  return input;
+};
+
 const wss = new WebSocket.Server({ noServer: true });
 wss.on('connection', socket => {
   console.log('websocket.connection');
@@ -53,9 +63,15 @@ wss.on('connection', socket => {
   socket.on('message', message => {
     const messageJSON = JSON.parse(`${message}`);
     if (messageJSON.type === 'hello') {
-      const maxEventsPerSecond =
-        messageJSON.maxEventsPerSecond || maxEventsPerSecondDefault;
-      const batchSize = messageJSON.batchSize || batchSizeDefault;
+      const maxEventsPerSecond = getReasonableInput(
+        messageJSON.maxEventsPerSecond,
+        maxEventsPerSecondDefault,
+      );
+
+      const batchSize = getReasonableInput(
+        messageJSON.batchSize,
+        batchSizeDefault,
+      );
 
       console.log('websocket.connection.message: hello');
       interval = setInterval(() => {
