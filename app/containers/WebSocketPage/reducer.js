@@ -24,26 +24,33 @@ export const initialState = {
 };
 
 /* eslint-disable default-case, no-param-reassign */
+const processDefaultAction = (draft, action) => {
+  const newItems = [];
+  action.items.forEach(item => {
+    draft.itemsReceived += 1;
+    if (
+      draft.itemsWritten / ((+Date.now() - draft.startTime) / 1000) <
+      draft.rateLimitItemsPerSecond
+    ) {
+      item.id = item.event_id;
+      newItems.push(item);
+      draft.itemsWritten += 1;
+    }
+  });
+  draft.items = newItems.reverse().concat(draft.items);
+  if (draft.items.length > draft.maxSize) {
+    draft.items.length = draft.maxSize;
+  }
+  draft.lastBatchTime = +Date.now();
+  return draft;
+};
+
+/* eslint-disable default-case, no-param-reassign */
 const webSocketPageReducer = (state = initialState, action) =>
   produce(state, draft => {
     switch (action.type) {
       case DEFAULT_ACTION:
-        // console.log('default action', action.items);
-        action.items.forEach(item => {
-          draft.itemsReceived += 1;
-          if (
-            draft.itemsWritten / ((+Date.now() - draft.startTime) / 1000) <
-            draft.rateLimitItemsPerSecond
-          ) {
-            item.id = item.event_id;
-            draft.items.unshift(item);
-            if (draft.items.length > draft.maxSize) {
-              draft.items.length = draft.maxSize;
-            }
-            draft.itemsWritten += 1;
-          }
-        });
-        draft.lastBatchTime = +Date.now();
+        draft = processDefaultAction(draft, action);
         break;
       case RESTART_ACTION:
         draft.itemsReceived = 0;

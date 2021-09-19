@@ -123,7 +123,8 @@ export function WebSocketPage(props) {
                 );
               }}
             />{' '}
-            - maxEventsPerSecond
+            - maxEventsPerSecond: how many events the server will attempt to
+            send per second
           </div>
           <div>
             <Input
@@ -148,7 +149,7 @@ export function WebSocketPage(props) {
                 );
               }}
             />{' '}
-            - batchSize
+            - batchSize: The size of batches sent by the server
           </div>
           <h3>Client Options</h3>
           <div>
@@ -169,7 +170,7 @@ export function WebSocketPage(props) {
                 );
               }}
             />{' '}
-            - rateLimit
+            - rateLimit: Max number of events to display per second
           </div>
           <div>
             <Input
@@ -189,7 +190,7 @@ export function WebSocketPage(props) {
                 );
               }}
             />{' '}
-            - inMemoryMaxSize
+            - inMemoryMaxSize: Size of the list to display
           </div>
         </>
       )}
@@ -203,7 +204,9 @@ export function WebSocketPage(props) {
           rate/s:{' '}
           {Math.round(
             (props.webSocketPage.itemsReceived /
-              ((+Date.now() - props.webSocketPage.startTime) / 1000)) *
+              ((+props.webSocketPage.lastBatchTime -
+                props.webSocketPage.startTime) /
+                1000)) *
               100,
           ) / 100}
         </code>
@@ -214,7 +217,9 @@ export function WebSocketPage(props) {
         rate/s:{' '}
         {Math.round(
           (props.webSocketPage.itemsWritten /
-            ((+Date.now() - props.webSocketPage.startTime) / 1000)) *
+            ((+props.webSocketPage.lastBatchTime -
+              props.webSocketPage.startTime) /
+              1000)) *
             100,
         ) / 100}
       </h5>
