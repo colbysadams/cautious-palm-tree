@@ -28,7 +28,9 @@ export default function FeaturePage() {
         <ListItem>
           <ListItemTitle>source</ListItemTitle>
           <p>
-            https://github.com/colbysadams/cautious-palm-tree/tree/master/app/containers/WebSocketPage
+            <a href="https://github.com/colbysadams/cautious-palm-tree/tree/master/app/containers/WebSocketPage">
+              colbysadams/cautious-palm-tree
+            </a>
           </p>
         </ListItem>
       </List>

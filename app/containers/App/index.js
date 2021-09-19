@@ -43,7 +43,6 @@ export default function App() {
         <Route path="/websockets" component={WebSocketPage} />
         <Route path="" component={NotFoundPage} />
       </Switch>
-      <Footer />
       <GlobalStyle />
     </AppWrapper>
   );
