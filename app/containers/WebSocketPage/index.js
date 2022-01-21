@@ -60,6 +60,9 @@ export function WebSocketPage(props) {
   // });
 
   const openWsConnection = () => {
+    window.analytics.track('Websocket Opened', {
+      prop1: 'prop 1',
+    });
     props.dispatch(restartAction());
     const c = new WebSocket(`${webSocketHost()}/api/websocket`);
     c.addEventListener('message', msg => {
@@ -90,9 +93,15 @@ export function WebSocketPage(props) {
       <StyledButton
         onClick={() => {
           if (wsClient != null) {
+            window.analytics.track('Websocket Paused', {
+              prop1: 'prop 1',
+            });
             wsClient.close();
             setWsClient(null);
           } else {
+            window.analytics.track('Websocket Resumed', {
+              prop1: 'prop 1',
+            });
             setWsClient(openWsConnection());
           }
         }}

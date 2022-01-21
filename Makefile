@@ -11,13 +11,14 @@ if ($$2 == "")\
 else \
 	printf "\033[36m%-30s\033[0m %s \n", $$1, $$2}' $(MAKEFILE_LIST)
 
-
+.PHONY: install
+install: ## install dependencies for project
+	npm install
 
 .PHONY: build
 build: ## build the docker container
 	@echo "--- make build"
 	docker build -t $(REGISTRY_NAME):latest .
-
 
 .PHONY: push
 push: ## build and push the docker container
@@ -26,4 +27,14 @@ push: ## build and push the docker container
 
 .PHONY: run-docker
 run-docker: ## run the latest docker image
+	${MAKE} build
 	docker run -it --rm -p 8080:3000 $(REGISTRY_NAME):latest
+
+.PHONY: deploy
+deploy: ## re-build app and deploy to aws via terraform
+	${MAKE} push
+	${MAKE} apply
+
+.PHONY: apply
+apply:
+	 cd terraform/live/stage/services/hello-world-app && terraform apply
