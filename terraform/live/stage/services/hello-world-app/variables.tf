@@ -9,3 +9,11 @@ variable "environment" {
   type        = string
   default     = "stage"
 }
+
+variable "docker_image_tag" {
+  description = "tag of image to run"
+}
+
+variable "docker_image" {
+  description = "docker image to run"
+}

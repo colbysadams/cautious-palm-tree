@@ -12,11 +12,12 @@ provider "aws" {
 module "hello_world_app" {
   source = "../../../../modules/services/hello-world-app"
 
-  environment            = var.environment
-  instance_type      = "t2.micro"
-  min_size           = 1
-  max_size           = 1
-  enable_autoscaling = false
+  environment           = var.environment
+  instance_type         = "t2.micro"
+  min_size              = 1
+  max_size              = 1
+  enable_autoscaling    = false
   docker_container_port = 3000
-  docker_image = "docker.io/colbysadams/websocket-test"
+  docker_image_tag      = var.docker_image_tag
+  docker_image          = var.docker_image
 }
